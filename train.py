@@ -57,8 +57,10 @@ def set_bn_eval(m):
 
 def create_model_and_optimizer(args, device, num_classes, resume_path=None):
     """Create model, frozen model, and optimizer"""
-    model = models.create(args.net, pretrained=True, dim=args.dim)
-    model_frozen = models.create(args.net, pretrained=True, dim=args.dim)
+    # Don't load ImageNet pretrained weights if we have a resume checkpoint
+    use_pretrained = resume_path is None
+    model = models.create(args.net, pretrained=use_pretrained, dim=args.dim)
+    model_frozen = models.create(args.net, pretrained=use_pretrained, dim=args.dim)
     
     if resume_path is not None:
         print('Loading model from {}'.format(resume_path))
