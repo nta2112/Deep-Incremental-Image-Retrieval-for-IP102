@@ -90,8 +90,10 @@ class IP102Data(data.Dataset):
         
         search_paths = [
             os.environ.get('IP102_DATA_ROOT', ''),
+            '/kaggle/input/datasets/nta212/ip102-for-object-detection',  # User's specific Kaggle path
             '/kaggle/input/ip102-dataset',
             '/kaggle/input/ip102',
+            '/kaggle/input/IP102 dataset',
             'D:/Sau_Benh_object/retrieval-img/IP102 dataset',
             './IP102 dataset',
             '../IP102 dataset',
