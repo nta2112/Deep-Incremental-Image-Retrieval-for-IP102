@@ -143,14 +143,12 @@ def create_data_loaders(args, task_id):
     
     val_loader = torch.utils.data.DataLoader(
         data.val,
-        batch_size=args.batch_size,
         shuffle=False,
         **loader_kwargs
     )
     
     gallery_loader = torch.utils.data.DataLoader(
         data.gallery,
-        batch_size=args.batch_size,
         shuffle=False,
         **loader_kwargs
     )
