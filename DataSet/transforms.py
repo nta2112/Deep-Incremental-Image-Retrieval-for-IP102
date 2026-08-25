@@ -1,8 +1,7 @@
 """
-Custom transforms for image preprocessing.
+Custom transforms for image preprocessing - all work with numpy arrays.
 """
 import torch
-import torchvision.transforms as T
 from PIL import Image
 import numpy as np
 import random
@@ -83,7 +82,11 @@ class CenterCrop(object):
     def __call__(self, img):
         if isinstance(img, np.ndarray):
             img = Image.fromarray(img)
-        return T.CenterCrop(self.size)(img)
+        w, h = img.size
+        th, tw = self.size
+        i = (h - th) // 2
+        j = (w - tw) // 2
+        return img.crop((j, i, j + tw, i + th))
 
 
 class ToTensor(object):
@@ -92,7 +95,7 @@ class ToTensor(object):
         if isinstance(img, np.ndarray):
             img = torch.from_numpy(img.transpose((2, 0, 1))).float() / 255.0
         elif isinstance(img, Image.Image):
-            img = T.ToTensor()(img)
+            img = torch.from_numpy(np.array(img).transpose((2, 0, 1))).float() / 255.0
         return img
 
 
@@ -115,13 +118,3 @@ class Compose(object):
         for t in self.transforms:
             img = t(img)
         return img
-
-
-# Alias for torchvision compatibility
-Compose = T.Compose
-Resize = T.Resize
-RandomResizedCrop = T.RandomResizedCrop
-RandomHorizontalFlip = T.RandomHorizontalFlip
-CenterCrop = T.CenterCrop
-ToTensor = T.ToTensor
-Normalize = T.Normalize
