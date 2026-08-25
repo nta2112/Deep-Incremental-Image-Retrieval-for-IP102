@@ -6,4 +6,10 @@ from .extract_featrure import extract_features, pairwise_distance, pairwise_simi
 from .recall_at_k import Recall_at_ks, mean_average_precision, topK_visual
 from .NMI import NMI
 from .top_k import Compute_top_k, Compute_top_k_name
+from .metrics import (
+    recall_at_k, mean_average_precision, compute_ood_metrics,
+    compute_lifelong_metrics, evaluate_incremental_retrieval,
+    log_results_csv, log_history_json, compute_all_metrics,
+    test_metrics_perfect_case, test_metrics_all_seen
+)
 # from utils import to_torch

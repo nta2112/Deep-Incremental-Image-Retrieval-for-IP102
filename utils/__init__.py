@@ -9,6 +9,11 @@ from .HyperparamterDisplay import display
 from .Batch_generator import BatchGenerator
 from .cluster import cluster_
 from .numpy_tozero import to_zero
+from .multi_gpu import (
+    unwrap_model, get_device_ids, get_num_gpus, get_loader_kwargs,
+    wrap_model, get_device, model_state_dict, load_model_state,
+    get_model_attribute, set_model_attribute, is_data_parallel, get_module
+)
 
 def to_numpy(tensor):
     if torch.is_tensor(tensor):

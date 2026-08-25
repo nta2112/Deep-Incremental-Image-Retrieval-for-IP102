@@ -1,0 +1,47 @@
+ Tôi cần bạn sửa repo/code trong CVPR21_PASS theo quy trình chung sau đây (không thêm yếu tố từ mô hình/thuật toán khác): 
+
+     ## 0. Lớp (class) sử dụng cho dataset IP102 — ĐỌC KỸ ĐỂ TRÁNH NHẦM LẪN
+     - Số lớp sử dụng (25 lớp) nằm trong file: `D:\Sau_Benh_object\retrieval-img\IP102 dataset\filtered_class.txt`
+       File này CHỈ chứa các con số (mỗi số 1 dòng), là `category_id` trong train.json/val.json/test.json.
+     - Bản đồ ánh xạ giữa số lớp và tên lớp thực tế (102 lớp) nằm trong file:
+       `D:\Sau_Benh_object\retrieval-img\IP102 dataset\classes.txt`
+       Định dạng mỗi dòng: `<số thứ tự lớp> <tên lớp>`, ví dụ `14 rice shell pest`.
+     - Quy ước quan trọng:
+       + Mọi repo PHẢI dùng ĐÚNG 25 lớp trong filtered_class.txt làm tập lớp sử dụng (train/val/test).
+       + Số lớp mỗi repo chia theo task luôn là 7/6/6/6 (tổng 25).
+       + Khi cần ánh xạ ra tên thực tế (in, log, báo cáo) thì tra cứu qua classes.txt.
+     - Nếu chạy trên Kaggle, đường dẫn 2 file này được cung cấp trong cùng 1 Input chứa dataset;
+       code phải auto-tìm (deep-walk) để đọc, không hard-code đường dẫn tuyệt đối local.
+
+     ## 1. Thêm dataset mới                                                                                   
+     - Thêm/đăng ký dataset tùy chỉnh, GIỮ NGUYÊN các dataset có sẵn, không đổi logic model gốc.
+     - Auto-tìm thư mục dữ liệu bằng deep-walk (hỗ trợ env var, fallback /kaggle/input, đường dẫn local),   
+     vì path khác nhau giữa local và Kaggle.
+     - Hỗ trợ riêng split val (nếu không có thì fallback = test).
+  
+     ## 2. Metrics (retrieval + open-world + lifelong)                                                        
+     - Retrieval: R@1/5/10, mAP macro.
+     - Open-world (OOD detection): Recall@1 trên tập Seen (S), Recall@1 trên tập Unseen (u) AUROC, FPR@TPR95 — Tùy vào metric mà trả None khi đã thấy đủ toàn bộ lớp.                    
+     - Lifelong: plasticity / forgetting / overall từ mAP theo nhóm task.
+     - Ghi sau mỗi task: results.csv (header: task,numclass,cnn_top1,nme_top1,R@1,R@5,R@10,mAP,AUROC,FPR95,   
+     Plasticity,Forgetting,Overall) + history.json.
+                                                                                                              
+     ## 3. An toàn nhiều GPU
+     - Khi cấu hình >1 GPU: DataLoader drop_last=True + batch_size chia hết cho số GPU (helper 
+     get_loader_kwargs).                                                                                      
+     - Mọi truy cập thuộc tính trên model bọc nn.DataParallel (model.convnet, model.fc, state_dict...) phải 
+     unwrap (helper unwrap_model: trả .module nếu là DataParallel).
+     - Device config ["0","1"]; notebook thì auto-detect số GPU.
+## 4. Kaggle notebook
+     - Code clone tự động từ GitHub (env IP102_CODE_REPO), fallback /kaggle/input.
+     - Dataset là 1 Input duy nhất.                                                                           
+     - Hàm run_train(model, max_tasks, memory_size): max_tasks=1 test nhanh, 0 = đủ tasks.
+     - Cell cuối HIỂN THỊ results.csv — glob đúng đường dẫn thực tế nơi code chạy.                            
+  
+     ## 5. Kiểm tra trước khi bàn giao                                                  
+     - py_compile mọi file sửa.
+     - Unit test metrics (case hoàn hảo: R@1/mAP=1.0; OOD AUROC=1.0/FPR95=0.0; None khi all seen; lifelong    
+     đúng).
+     - Parse dataset thật: 0 ảnh thiếu, số image/annotation khớp.
+     - JSON config + notebook hợp lệ.                                                                         
+     - Commit + push lên GitHub repo được chỉ đinh, loại bỏ origin cũ của tác giả.

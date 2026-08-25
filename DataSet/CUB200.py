@@ -119,7 +119,7 @@ class MyData(data.Dataset):
         return len(self.images)
 
 class CUB_200_2011:
-    def __init__(self, width=227, origin_width=256, ratio=0.16, root=None, transform=None, new_label_start_point=0):
+    def __init__(self, width=227, origin_width=256, ratio=0.16, root=None, transform=None, new_label_start_point=0, task_id=0, max_tasks=1):
         print('width: \t {}'.format(width))
         transform_Dict = Generate_transform_Dict(origin_width=origin_width, width=width, ratio=ratio)
         if root is None:
@@ -130,6 +130,7 @@ class CUB_200_2011:
 
         self.train = MyData(root, label_txt=train_txt, transform=transform_Dict['rand-crop'])
         self.gallery = MyData(root, label_txt=test_txt, transform=transform_Dict['center-crop'])
+        self.val = self.gallery
 
 
 

@@ -14,7 +14,7 @@ from DataSet.CUB200 import MyData, default_loader, Generate_transform_Dict
 
 
 class Stanforddog120:
-    def __init__(self, root=None, origin_width=256, width=227, ratio=0.16, transform=None):
+    def __init__(self, root=None, origin_width=256, width=227, ratio=0.16, transform=None, task_id=0, max_tasks=1):
 
         if transform is None:
             transform_Dict = Generate_transform_Dict(origin_width=origin_width, width=width, ratio=ratio)
@@ -27,4 +27,5 @@ class Stanforddog120:
 
         self.train = MyData(root, label_txt=train_txt, transform=transform_Dict['rand-crop'])
         self.gallery = MyData(root, label_txt=test_txt, transform=transform_Dict['center-crop'])
+        self.val = self.gallery
 

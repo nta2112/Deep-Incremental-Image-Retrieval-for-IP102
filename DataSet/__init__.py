@@ -1,12 +1,14 @@
 from .CUB200 import CUB_200_2011
 from .Stanford_dog import Stanforddog120
+from .IP102 import IP102, create_ip102_dataset
 
 # from .transforms import *
 import os 
 
 __factory = {
-    'cub': CUB_200_2011
-    'dog': Stanforddog120
+    'cub': CUB_200_2011,
+    'dog': Stanforddog120,
+    'ip102': IP102,
 }
 
 
