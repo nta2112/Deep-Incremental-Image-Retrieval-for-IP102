@@ -17,7 +17,12 @@ def Model2Feature(data, net, checkpoint, dim=512, width=224, root=None, Retrieva
 
     resume = checkpoint
     net_dict = model.state_dict()
-    weights = resume['state_dict']
+    # Handle both formats: {'state_dict': ...} or raw state_dict
+    if isinstance(resume, dict) and 'state_dict' in resume:
+        weights = resume['state_dict']
+    else:
+        weights = resume
+    
     pretrained_dict = {k: v for k, v in weights.items() if k in net_dict}
     net_dict.update(pretrained_dict)
     model.load_state_dict(net_dict)
