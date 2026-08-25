@@ -28,6 +28,12 @@ def recall_at_k(sim_mat, query_ids, gallery_ids, ks=(1, 5, 10)):
     
     sorted_indices = torch.argsort(sim_mat, dim=1, descending=True)
     
+    # Ensure query_ids and gallery_ids are tensors for indexing
+    if not isinstance(query_ids, torch.Tensor):
+        query_ids = torch.tensor(query_ids)
+    if not isinstance(gallery_ids, torch.Tensor):
+        gallery_ids = torch.tensor(gallery_ids)
+    
     results = {}
     for k in ks:
         correct = 0
@@ -52,6 +58,12 @@ def mean_average_precision(sim_mat, query_ids, gallery_ids, macro=True):
     Returns:
         mAP value
     """
+    # Ensure query_ids and gallery_ids are tensors
+    if not isinstance(query_ids, torch.Tensor):
+        query_ids = torch.tensor(query_ids)
+    if not isinstance(gallery_ids, torch.Tensor):
+        gallery_ids = torch.tensor(gallery_ids)
+    
     num_queries = sim_mat.shape[0]
     sorted_indices = torch.argsort(sim_mat, dim=1, descending=True)
     
@@ -145,6 +157,10 @@ def compute_ood_metrics(sim_mat, query_ids, gallery_ids, seen_classes):
 
 def compute_recall_at_1_seen(sim_mat, query_ids, gallery_ids):
     """Recall@1 for seen classes"""
+    if not isinstance(query_ids, torch.Tensor):
+        query_ids = torch.tensor(query_ids)
+    if not isinstance(gallery_ids, torch.Tensor):
+        gallery_ids = torch.tensor(gallery_ids)
     num_queries = sim_mat.shape[0]
     sorted_indices = torch.argsort(sim_mat, dim=1, descending=True)
     correct = 0
@@ -157,6 +173,10 @@ def compute_recall_at_1_seen(sim_mat, query_ids, gallery_ids):
 
 def compute_recall_at_1_unseen(sim_mat, query_ids, gallery_ids):
     """Recall@1 for unseen classes (should be low for good OOD detection)"""
+    if not isinstance(query_ids, torch.Tensor):
+        query_ids = torch.tensor(query_ids)
+    if not isinstance(gallery_ids, torch.Tensor):
+        gallery_ids = torch.tensor(gallery_ids)
     num_queries = sim_mat.shape[0]
     sorted_indices = torch.argsort(sim_mat, dim=1, descending=True)
     correct = 0
