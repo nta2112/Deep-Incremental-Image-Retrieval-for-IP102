@@ -106,12 +106,13 @@ def compute_ood_metrics(sim_mat, query_ids, gallery_ids, seen_classes):
     num_queries = sim_mat.shape[0]
     max_sim, _ = torch.max(sim_mat, dim=1)
     
-    if isinstance(query_ids, torch.Tensor):
-        query_ids_list = query_ids.cpu().numpy().tolist()
-    else:
-        query_ids_list = query_ids
+    # Convert query_ids and gallery_ids to tensors for boolean indexing
+    if not isinstance(query_ids, torch.Tensor):
+        query_ids = torch.tensor(query_ids)
+    if not isinstance(gallery_ids, torch.Tensor):
+        gallery_ids = torch.tensor(gallery_ids)
     
-    is_seen = torch.tensor([q in seen_classes for q in query_ids_list], dtype=torch.bool)
+    is_seen = torch.tensor([q in seen_classes for q in query_ids.cpu().numpy().tolist()], dtype=torch.bool)
     is_unseen = ~is_seen
     
     results = {}
