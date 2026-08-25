@@ -290,6 +290,15 @@ def run_incremental_training(args):
                     print(f"  R@{k}={results.get(f'R@{k}', 0):.4f}", end=' ')
                 print()
                 
+                # Print OOD metrics
+                if results.get('AUROC') is not None:
+                    print(f"  AUROC={results['AUROC']:.4f}  FPR@TPR95={results['FPR@TPR95']:.4f}")
+                    print(f"  R@1_Seen={results['Recall@1_Seen']:.4f}  R@1_Unseen={results['Recall@1_Unseen']:.4f}")
+                
+                # Print Lifelong metrics
+                if results.get('Plasticity') is not None:
+                    print(f"  Plasticity={results['Plasticity']:.4f}  Forgetting={results['Forgetting']:.4f}  Overall={results['Overall']:.4f}")
+                
                 if current_map > best_map:
                     best_map = current_map
                     save_checkpoint({
@@ -320,6 +329,12 @@ def run_incremental_training(args):
                          json_path=osp.join(args.save_dir, 'history.json'))
         
         print(f"\nTask {task_id} completed. Best mAP: {best_map:.4f}")
+        
+        # Final evaluation summary with all metrics
+        if final_results.get('AUROC') is not None:
+            print(f"  Final - AUROC={final_results['AUROC']:.4f}  FPR@TPR95={final_results['FPR@TPR95']:.4f}  R@1_Seen={final_results['Recall@1_Seen']:.4f}  R@1_Unseen={final_results['Recall@1_Unseen']:.4f}")
+        if final_results.get('Plasticity') is not None:
+            print(f"  Final - Plasticity={final_results['Plasticity']:.4f}  Forgetting={final_results['Forgetting']:.4f}  Overall={final_results['Overall']:.4f}")
     
     print("\nTraining completed!")
     print(f"Results saved to {osp.join(args.save_dir, 'results.csv')}")
