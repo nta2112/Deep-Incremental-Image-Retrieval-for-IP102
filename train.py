@@ -71,15 +71,23 @@ def create_model_and_optimizer(args, device, num_classes, resume_path=None):
         else:
             weight = chk_pt
         
+        # Remove 'module.' prefix if saved with DataParallel
+        if any(k.startswith('module.') for k in weight.keys()):
+            weight = {k.replace('module.', ''): v for k, v in weight.items()}
+        
+        # Load with strict=False to handle size mismatches (e.g., fc_layer)
         model_dict = model.state_dict()
-        pretrained_dict = {k: v for k, v in weight.items() if k in model_dict}
+        pretrained_dict = {k: v for k, v in weight.items() if k in model_dict and v.shape == model_dict[k].shape}
+        skipped = [k for k in weight if k in model_dict and weight[k].shape != model_dict[k].shape]
+        if skipped:
+            print('Skipped keys due to size mismatch: {}'.format(skipped))
         model_dict.update(pretrained_dict)
-        model.load_state_dict(model_dict)
+        model.load_state_dict(model_dict, strict=False)
         
         model_dict_frozen = model_frozen.state_dict()
-        pretrained_dict_frozen = {k: v for k, v in weight.items() if k in model_dict_frozen}
+        pretrained_dict_frozen = {k: v for k, v in weight.items() if k in model_dict_frozen and v.shape == model_dict_frozen[k].shape}
         model_dict_frozen.update(pretrained_dict_frozen)
-        model_frozen.load_state_dict(model_dict_frozen)
+        model_frozen.load_state_dict(model_dict_frozen, strict=False)
         model_frozen.eval()
     
     model = wrap_model(model, args.gpu_ids)
