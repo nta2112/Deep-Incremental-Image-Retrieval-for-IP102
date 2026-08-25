@@ -234,7 +234,7 @@ def run_incremental_training(args):
             resume_path = args.resume
             incremental_flag = False
         else:
-            resume_path = osp.join(args.save_dir, f'ckp_task{task_id}_best.pth.tar')
+            resume_path = osp.join(args.save_dir, f'ckp_task{task_id - 1}_best.pth.tar')
             incremental_flag = True
         
         args.Incremental_flag = incremental_flag
