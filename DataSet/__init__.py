@@ -25,7 +25,9 @@ def create(name, root=None, *args, **kwargs):
     Create a dataset instance.
     """
     if root is not None:
-        root = os.path.join(root, get_full_name(name))
+        # IP102 dataset is directly at root, not in a subdirectory
+        if name != 'ip102':
+            root = os.path.join(root, get_full_name(name))
 
     if name not in __factory:
 
