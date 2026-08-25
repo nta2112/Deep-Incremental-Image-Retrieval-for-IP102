@@ -65,7 +65,11 @@ def create_model_and_optimizer(args, device, num_classes, resume_path=None):
     if resume_path is not None:
         print('Loading model from {}'.format(resume_path))
         chk_pt = torch.load(resume_path, map_location=device)
-        weight = chk_pt['state_dict']
+        # Handle both formats: {'state_dict': ...} or raw state_dict
+        if isinstance(chk_pt, dict) and 'state_dict' in chk_pt:
+            weight = chk_pt['state_dict']
+        else:
+            weight = chk_pt
         
         model_dict = model.state_dict()
         pretrained_dict = {k: v for k, v in weight.items() if k in model_dict}
