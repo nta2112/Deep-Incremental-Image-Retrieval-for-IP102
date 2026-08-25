@@ -234,7 +234,23 @@ def run_incremental_training(args):
             resume_path = args.resume
             incremental_flag = False
         else:
-            resume_path = osp.join(args.save_dir, f'ckp_task{task_id - 1}_best.pth.tar')
+            # Try to find the previous task's best checkpoint
+            expected_path = osp.join(args.save_dir, f'ckp_task{task_id - 1}_best.pth.tar')
+            if osp.exists(expected_path):
+                resume_path = expected_path
+            else:
+                # Fallback: find any checkpoint from previous task
+                import glob
+                pattern = osp.join(args.save_dir, f'ckp_task{task_id - 1}_*.pth.tar')
+                matches = glob.glob(pattern)
+                if matches:
+                    # Use the latest (highest epoch)
+                    resume_path = max(matches, key=osp.getmtime)
+                    print(f"Using fallback checkpoint: {resume_path}")
+                else:
+                    # Last resort: use the initial resume path
+                    resume_path = args.resume
+                    print(f"Warning: No checkpoint found for task {task_id - 1}, using initial resume: {resume_path}")
             incremental_flag = True
         
         args.Incremental_flag = incremental_flag
