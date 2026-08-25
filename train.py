@@ -30,7 +30,7 @@ import losses
 from utils import (
     FastRandomIdentitySampler, mkdir_if_missing, logging, display,
     unwrap_model, get_loader_kwargs, wrap_model, get_device, get_num_gpus,
-    model_state_dict, get_model_attribute
+    get_device_ids, model_state_dict, get_model_attribute
 )
 from utils.serialization import save_checkpoint
 from trainer import train
