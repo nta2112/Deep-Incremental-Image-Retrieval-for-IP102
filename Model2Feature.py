@@ -29,7 +29,6 @@ def Model2Feature(data, net, checkpoint, dim=512, width=224, root=None, Retrieva
 
     model = wrap_model(model, gpu_ids)
     device = get_device(gpu_ids)
-    model = model.to(device)
     
     data = DataSet.create(data, width=width, root=root, task_id=task_id, max_tasks=max_tasks)
     
