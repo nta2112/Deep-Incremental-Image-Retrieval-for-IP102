@@ -76,14 +76,18 @@ def get_loader_kwargs(batch_size, num_workers, gpu_ids=None, drop_last=True):
 def wrap_model(model, gpu_ids=None):
     """
     Wrap model with DataParallel if multiple GPUs available.
+    Ensures model is on correct device before wrapping.
     """
     device_ids = get_device_ids(gpu_ids)
+    
+    if len(device_ids) > 0:
+        # Move model to first GPU before wrapping (required for DataParallel)
+        model = model.cuda(device_ids[0])
     
     if len(device_ids) > 1:
         model = nn.DataParallel(model, device_ids=device_ids)
         print(f"Model wrapped with DataParallel on GPUs: {device_ids}")
     elif len(device_ids) == 1:
-        model = model.cuda(device_ids[0])
         print(f"Model moved to GPU: {device_ids[0]}")
     else:
         print("No GPU available, using CPU")
